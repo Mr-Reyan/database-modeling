@@ -1,12 +1,16 @@
 from .models import Inventory
 
-from .serializers import InventorySerializer
+from .serializers import InventoryReadSerializer,InventoryWriteSerializer
 from rest_framework.viewsets import ModelViewSet
 
 
 class InventoryViewSet(ModelViewSet):
     queryset = Inventory.objects.all()
-    serializer_class = InventorySerializer
+    
+    def get_serializer_class(self):
+        if self.action in ['list','retrieve']:
+            return InventoryReadSerializer
+        return InventoryWriteSerializer
     def get_queryset(self):
         return Inventory.objects.select_related(
             "product"

@@ -1,7 +1,9 @@
 from django.db import models
 from products.models import Product
-from  django.contrib.auth.models import User
+from django.conf import settings
 # Create your models here.
+
+
 
 STATUS_CHOICES = (
     ('PENDING','Pending'),
@@ -12,7 +14,7 @@ STATUS_CHOICES = (
 )
 
 class Order(models.Model):
-    user = models.ForeignKey(User,on_delete=models.PROTECT,related_name='orders')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT,related_name='orders')
     status = models.CharField(choices=STATUS_CHOICES,max_length=20,default='PENDING')
     total_price = models.DecimalField(
         max_digits=10,

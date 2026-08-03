@@ -1,6 +1,11 @@
 from django.db import models
 from django.db.models import Q
-# Create your models here.
+from django.contrib.postgres.indexes import GinIndex
+from django.conf import settings
+from authen.models import Tenant
+
+
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100,unique=True)
@@ -26,6 +31,7 @@ class Product(models.Model):
         max_digits=10,
         decimal_places=2
     )
+    tenant = models.ForeignKey(Tenant,on_delete=models.CASCADE,related_name="products")
 
     category = models.ForeignKey(
         Category,
@@ -43,11 +49,12 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True,db_index=True)
     sku = models.CharField(max_length=50,unique=True)
     is_deleted = models.BooleanField(default=False,db_index=True)
+    specifications = models.JSONField(blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
     class Meta:
         indexes = [
+            GinIndex(fields=["specifications"]),
             models.Index(fields=['price']),
             models.Index(
                 fields=['category','price'],

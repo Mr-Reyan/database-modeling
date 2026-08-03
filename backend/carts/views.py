@@ -16,7 +16,8 @@ def add_to_cart(request):
         Product,
         id=product_id,
         is_active=True,
-        is_deleted=False
+        is_deleted=False,
+        tenant=request.user.tenant
     )
 
     try:
@@ -64,7 +65,13 @@ def update_cart_quantity(request,product_id):
         is_deleted=False
     )
     
-    quantity = request.data.get('quantity',1)
+    try:
+        quantity = int(request.data.get("quantity", 1))
+    except (TypeError, ValueError):
+        return Response(
+            {"error": "Quantity must be an integer"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     if quantity <= 0:
         return Response(
             {"error": "Quantity must be greater than 0"},
