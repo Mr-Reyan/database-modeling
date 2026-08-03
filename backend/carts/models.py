@@ -1,0 +1,40 @@
+from django.db import models
+from products.models import Product 
+from django.contrib.auth.models import User
+# Create your models here.
+
+
+
+class Cart(models.Model):
+    
+    user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='cart')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+    def __str__(self):
+        return self.name
+    
+class CartItem(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT,
+        related_name='cart_items'
+        )
+
+    quantity = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["cart", "product"],
+                name="unique_product_per_cart"
+            )
+        ]
+    def __str__(self):
+        return self.name
