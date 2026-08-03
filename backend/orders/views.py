@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from config.redis import redis_client
 # Create your views here.
+from .serializers import OrderSerializer
 
 
 @api_view(['POST'])
@@ -79,3 +80,10 @@ def top_customers(request):
         for username, score in top
     ]
     return Response(leaderboard,status=200)
+
+
+@api_view(['GET'])
+def get_orders(request):
+    orders = Order.objects.filter(user=request.user)
+    serializer = OrderSerializer(orders,many=True)
+    return Response(serializer.data,status=200)
