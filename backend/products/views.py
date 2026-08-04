@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from .models import Product
 from .serializers import ProductReadSerializer,ProductWriteSerializer
 from config.redis import redis_client
-
+from rest_framework.permissions import AllowAny
 
 
 class ProductViewSet(ModelViewSet):
@@ -28,9 +28,9 @@ class ProductViewSet(ModelViewSet):
             is_active=True,
             tenant=self.request.user.tenant
             ).select_related('category').prefetch_related('tags')
+        
         key = self.request.query_params.get("spec_key")
         value = self.request.query_params.get("spec_value")
-
         if key and value:
             queryset = queryset.filter(
                 specifications__contains={key: value}
@@ -43,6 +43,11 @@ class ProductViewSet(ModelViewSet):
         )
         return super().perform_create(serializer)
     def list(self, request, *args, **kwargs):
+        if request.query_params:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+
         cached = redis_client.get(f"products:{request.user.tenant.id}")
 
         if cached:

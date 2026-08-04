@@ -14,6 +14,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+)
 from django.contrib import admin
 from django.urls import path,include
 
@@ -24,4 +28,17 @@ urlpatterns = [
     path('',include('carts.urls')),
     path('',include('orders.urls')),
     path('',include('authen.urls')),
+    path(
+        "api/schema/",
+        SpectacularAPIView.as_view(),
+        name="schema",
+    ),
+
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(
+            url_name="schema"
+        ),
+        name="swagger-ui",
+    ),
 ]
