@@ -1,15 +1,19 @@
 from rest_framework import serializers
-from .models import Product,Tag,Category
+
+from .models import Category, Product, Tag
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = "__all__"
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = "__all__"
+
 
 class ProductReadSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
@@ -19,7 +23,9 @@ class ProductReadSerializer(serializers.ModelSerializer):
         model = Product
         fields = "__all__"
 
+
 class ProductWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = "__all__"
+        read_only_fields = ["tenant"]

@@ -1,12 +1,12 @@
-from decimal import Decimal
 import random
+from decimal import Decimal
 
-from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
 
 from authen.models import Tenant
-from products.models import Product, Category, Tag
 from orders.models import Order, OrderItem
+from products.models import Category, Product, Tag
 
 User = get_user_model()
 
@@ -127,14 +127,12 @@ class Command(BaseCommand):
                 },
             )
 
-            product.tags.add(
-                *random.sample(tags, random.randint(1, 3))
-            )
+            product.tags.add(*random.sample(tags, random.randint(1, 3)))
             totals = [
-            1200,
-            1300,
-            400,
-        ]
+                1200,
+                1300,
+                400,
+            ]
 
         for user, total in zip(users, totals):
 
@@ -153,9 +151,7 @@ class Command(BaseCommand):
                     product=product,
                     product_name=product.name,
                     quantity=random.randint(1, 2),
-                    price_at_purchase=product.price,  
+                    price_at_purchase=product.price,
                 )
 
-        self.stdout.write(
-            self.style.SUCCESS("Database Seeded Successfully")
-        )
+        self.stdout.write(self.style.SUCCESS("Database Seeded Successfully"))

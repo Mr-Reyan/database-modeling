@@ -1,5 +1,7 @@
-from .redis import is_rate_limited
 from django.http import JsonResponse
+
+from .redis import is_rate_limited
+
 
 class RedisRateLimitMiddleware:
 
@@ -15,9 +17,6 @@ class RedisRateLimitMiddleware:
         )
 
         if is_rate_limited(user):
-            return JsonResponse(
-                {"detail": "Rate limit exceeded"},
-                status=429
-            )
+            return JsonResponse({"detail": "Rate limit exceeded"}, status=429)
 
         return self.get_response(request)
