@@ -1,6 +1,6 @@
 import React from 'react'
 import Card from './card'
-import { IntegralCF } from '../layout'
+import { IntegralCF } from '@/components/fonts'
 export function NewArrivals() {
   return (
     <div className="mt-17 flex flex-col md:px-20 px-5 ">

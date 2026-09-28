@@ -1,10 +1,12 @@
-'use client';
+'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-// import { ThemeProvider } from 'next-themes';
-export default function Providers({children}) {
-  const [queryClient] = useState(() =>
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { Toaster } from 'sonner'
+
+export default function Providers({ children }) {
+  const [queryClient] = useState(
+    () =>
       new QueryClient({
         defaultOptions: {
           queries: {
@@ -12,25 +14,18 @@ export default function Providers({children}) {
           },
         },
       })
-  );
+  )
 
-  useEffect(()=>{
-    fetch('http://127.0.0.1:8000/csrf/',{
-      credentials:'include'
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/csrf/', {
+      credentials: 'include',
     })
-  },[])
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
       {children}
-    </ThemeProvider> */}
-    {children}
+      <Toaster position="bottom-right" richColors closeButton />
     </QueryClientProvider>
   )
 }

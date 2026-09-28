@@ -1,24 +1,9 @@
-import { Geist } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
-import localFont from 'next/font/local'
 import Footer from '@/components/Footer'
 import Providers from './providers'
-// import localFont from '../../public/fonts/satoshi/Satoshi-Regular.otf'
+import { Satoshi } from '@/components/fonts'
 
-const Satoshi = localFont({
-  src: '../../public/fonts/satoshi/Satoshi-Regular.otf',
-  variable: '--font-custom',
-})
-
-export const IntegralCF = localFont({
-  src: '../../public/fonts/IntegralCF/IntegralCF-Bold.otf',
-  variable: '--font-custom',
-})
-
-const geist = Geist({
-  subsets: ['latin'],
-})
 
 export const metadata = {
   title: 'Create Next App',

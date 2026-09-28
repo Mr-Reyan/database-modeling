@@ -1,5 +1,5 @@
 import React from 'react'
-import { IntegralCF } from '../layout'
+import { IntegralCF } from '@/components/fonts'
 
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'

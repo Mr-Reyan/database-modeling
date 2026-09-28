@@ -1,5 +1,5 @@
 'use client'
-import { Star, Check } from 'lucide-react'
+import { Star, Check, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { IntegralCF, SatoshiThin } from '@/components/fonts'
@@ -74,6 +74,9 @@ const ProductDetailPage = () => {
 
 
 
+    const [isAddedSuccess, setIsAddedSuccess] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
     if (isLoading) {
         return <ProductSkeleton />
     }
@@ -87,12 +90,20 @@ const ProductDetailPage = () => {
     }
 
     const onSubmit = async (data) => {
+        if (isAddedSuccess || isSubmitting) return
+        setIsSubmitting(true)
         try {
-            await addToCart(data, params.id)
+            const res = await addToCart(data, params.id)
             queryClient.invalidateQueries({ queryKey: ['cart'] })
-            toast.success('Added to cart!')
-        } catch {
-            toast.error('Cannot Add to cart!')
+            setIsAddedSuccess(true)
+            toast.success(res?.info || res?.message || 'Added to cart!')
+            setTimeout(() => {
+                setIsAddedSuccess(false)
+            }, 2000)
+        } catch (err) {
+            toast.error(err?.message || 'Could not add item to cart. Please try again.')
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -341,22 +352,38 @@ const ProductDetailPage = () => {
 
                         <button
                             type='submit'
-                            disabled={currentStock === 0 && Boolean(selectedSize)}
+                            disabled={(currentStock === 0 && Boolean(selectedSize)) || isAddedSuccess || isSubmitting}
                             className={`
                                 h-12 flex-1
                                 rounded-full
                                 px-6
                                 text-sm font-medium
-                                text-white
-                                transition-opacity
+                                transition-all duration-300
+                                flex items-center justify-center gap-2
                                 ${
-                                    currentStock === 0 && Boolean(selectedSize)
-                                        ? 'bg-gray-400 cursor-not-allowed opacity-60'
-                                        : 'bg-black hover:opacity-80 dark:bg-white dark:text-black cursor-pointer'
+                                    isAddedSuccess
+                                        ? 'bg-emerald-600 text-white scale-[0.99] shadow-inner'
+                                        : (currentStock === 0 && Boolean(selectedSize))
+                                            ? 'bg-gray-400 cursor-not-allowed opacity-60 text-white'
+                                            : 'bg-black hover:opacity-85 text-white active:scale-[0.98] cursor-pointer'
                                 }
                             `}
                         >
-                            {currentStock === 0 && Boolean(selectedSize) ? 'Out of Stock' : 'Add to Cart'}
+                            {isAddedSuccess ? (
+                                <span className="flex items-center gap-2 animate-in zoom-in-50 duration-200">
+                                    <Check className="w-5 h-5 text-white stroke-[3]" />
+                                    <span>Added to Cart</span>
+                                </span>
+                            ) : isSubmitting ? (
+                                <span className="flex items-center gap-2">
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    <span>Adding...</span>
+                                </span>
+                            ) : currentStock === 0 && Boolean(selectedSize) ? (
+                                'Out of Stock'
+                            ) : (
+                                'Add to Cart'
+                            )}
                         </button>
 
                     </div>

@@ -1,11 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { ShoppingBag, Search, Menu, UserCircle2 } from 'lucide-react'
-import { IntegralCF } from '@/app/layout'
+import { IntegralCF } from '@/components/fonts'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { getCart } from '@/services/cart.service'
@@ -32,11 +30,13 @@ const Navbar = () => {
             SHOP.CO
           </Link>
 
-          <nav className="hidden lg:flex items-center  min-w-80 gap-5">
+          <nav className="hidden lg:flex items-center min-w-80 gap-5">
             <Link href="/store" className="text-md hover:text-gray-600">
               Store
             </Link>
-            {/* <a href="#" >Shop</a> */}
+            <Link href="/orders" className="text-md hover:text-gray-600">
+              Orders
+            </Link>
             <a href="#" className="text-md hover:text-gray-600">
               On Sale
             </a>
@@ -57,27 +57,26 @@ const Navbar = () => {
                 className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-md flex-1 w-auto lg:w-full"
               />
             </div>
-            <div className="flex items-center gap-1">
-              <Button
-                asChild
-                className="relative rounded-full h-10 w-10 p-0"
-                variant="ghost"
+            <div className="flex items-center gap-2">
+              <Link
+                href="/cart"
+                aria-label="View Shopping Cart"
+                className="relative flex h-10 w-10 items-center justify-center rounded-full text-black hover:bg-gray-100 transition-colors"
               >
-                <Link href="/cart" className="flex items-center justify-center w-full h-full">
-                  <ShoppingBag size="20" />
-                  {totalCartCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 min-w-5 px-1 bg-black text-white hover:bg-black flex items-center justify-center text-[10px] font-bold rounded-full">
-                      {totalCartCount > 99 ? '99+' : totalCartCount}
-                    </Badge>
-                  )}
-                </Link>
-              </Button>
-              <Button
-                className="relative rounded-full h-10 w-10 p-0"
-                variant="ghost"
+                <ShoppingBag className="w-5 h-5" />
+                {totalCartCount > 0 && (
+                  <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[10px] font-bold text-white leading-none">
+                    {totalCartCount > 99 ? '99+' : totalCartCount}
+                  </span>
+                )}
+              </Link>
+              <button
+                type="button"
+                aria-label="Account profile"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-black hover:bg-gray-100 transition-colors"
               >
-                <UserCircle2 size="20" />
-              </Button>
+                <UserCircle2 className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>

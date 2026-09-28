@@ -29,23 +29,68 @@ export default function CartCard({
   const updateMutation = useMutation({
     mutationFn: ({ newQuantity, product_id }) =>
       updateCart(newQuantity, product_id),
-    onSuccess() {
-      toast.success('Cart updated!')
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
+    onMutate: async ({ newQuantity, product_id }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['cart'] })
+
+      // Snapshot previous cart
+      const previousCart = queryClient.getQueryData(['cart'])
+
+      // Optimistically update quantity in query cache immediately (0ms)
+      queryClient.setQueryData(['cart'], (old) => {
+        if (!old || !old.items) return old
+        return {
+          ...old,
+          items: old.items.map((item) =>
+            item.product?.id === product_id
+              ? { ...item, quantity: newQuantity }
+              : item
+          ),
+        }
+      })
+
+      return { previousCart }
     },
-    onError(err) {
+    onError(err, variables, context) {
+      // Rollback on error
+      if (context?.previousCart) {
+        queryClient.setQueryData(['cart'], context.previousCart)
+      }
       toast.error(err?.message || 'Error updating cart!')
+    },
+    onSettled() {
+      // Ensure synchronized state with backend
+      queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteCartItem(product_id),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['cart'] })
+      const previousCart = queryClient.getQueryData(['cart'])
+
+      queryClient.setQueryData(['cart'], (old) => {
+        if (!old || !old.items) return old
+        return {
+          ...old,
+          items: old.items.filter((item) => item.product?.id !== product_id),
+        }
+      })
+
+      return { previousCart }
+    },
     onSuccess() {
       toast.success('Item removed from cart!')
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
-    onError() {
+    onError(err, variables, context) {
+      if (context?.previousCart) {
+        queryClient.setQueryData(['cart'], context.previousCart)
+      }
       toast.error('Error removing item!')
+    },
+    onSettled() {
+      queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
   })
 
