@@ -15,6 +15,8 @@ class CartItemSerializer(ModelSerializer):
             "product",
             "quantity",
             "created_at",
+            'size',
+            'color'
         ]
 
 

@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from products.models import Product
-from products.serializers import ProductReadSerializer
 
 from .models import Inventory
 
@@ -24,7 +23,7 @@ class InventoryWriteSerializer(serializers.ModelSerializer):
 
 
 class InventoryReadSerializer(serializers.ModelSerializer):
-    product = ProductReadSerializer(read_only=True)
+    # product = ProductReadSerializer(read_only=True)
 
     class Meta:
         model = Inventory

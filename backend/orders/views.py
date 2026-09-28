@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from carts.models import Cart
-from config.redis import redis_client
+from config.redis_client import redis_client
 from inventory.models import Inventory
 
 from .models import Order, OrderItem
@@ -44,15 +44,20 @@ def checkout_order(request):
                 price_at_purchase=item.product.price,
                 quantity=item.quantity,
                 product_name=item.product.name,
+                color=item.color,
+                size=item.size
             )
             total += item.quantity * item.product.price
 
         order.total_price = total
         order.save()
 
-        redis_client.zincrby(
-            "top_customers", float(order.total_price), request.user.username
-        )
+        try:
+            redis_client.zincrby(
+                "top_customers", float(order.total_price), request.user.username
+            )
+        except Exception:
+            pass
 
         items.delete()
 
@@ -63,10 +68,11 @@ def checkout_order(request):
 
 @api_view(["GET"])
 def top_customers(request):
-
-    top = redis_client.zrevrange("top_customers", 0, 2, withscores=True)
-
-    leaderboard = [{"username": username, "score": score} for username, score in top]
+    try:
+        top = redis_client.zrevrange("top_customers", 0, 2, withscores=True)
+        leaderboard = [{"username": username, "score": score} for username, score in top]
+    except Exception:
+        leaderboard = []
     return Response(leaderboard, status=200)
 
 

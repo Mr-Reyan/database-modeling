@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from carts.models import Cart
 from orders.models import Order, OrderItem
-from products.models import Category, Product, Tag
+from products.models import Category, Product, Tag,ProductImage
 
 from .models import *
 
@@ -15,3 +15,4 @@ admin.site.register(Product)
 admin.site.register(User)
 admin.site.register(Tenant)
 admin.site.register(Cart)
+admin.site.register(ProductImage)

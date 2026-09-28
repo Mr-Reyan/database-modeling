@@ -19,11 +19,13 @@ class Cart(models.Model):
         return f"{self.id}"
 
 
+
 class CartItem(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.PROTECT, related_name="cart_items"
     )
-
+    size = models.CharField(blank=True,null=True)
+    color = models.CharField(null=True,blank=True)
     quantity = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

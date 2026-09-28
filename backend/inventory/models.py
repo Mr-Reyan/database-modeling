@@ -7,9 +7,10 @@ from products.models import Product
 
 class Inventory(models.Model):
     product = models.OneToOneField(
-        Product, on_delete=models.CASCADE, related_name="inventory"
+        Product, on_delete=models.CASCADE, related_name="stock"
     )
     stock = models.PositiveIntegerField()
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

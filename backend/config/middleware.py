@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from .redis import is_rate_limited
+from .redis_client import is_rate_limited
 
 
 class RedisRateLimitMiddleware:
@@ -13,7 +13,7 @@ class RedisRateLimitMiddleware:
         user = (
             request.user.id
             if request.user.is_authenticated
-            else request.META["REMOTE_ADDR"]
+            else request.META.get("REMOTE_ADDR", "127.0.0.1")
         )
 
         if is_rate_limited(user):
